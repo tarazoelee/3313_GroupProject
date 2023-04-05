@@ -130,9 +130,12 @@ int main(void)
     std::cout << "I am a server" << std::endl;
 	std::cout << "Type CLOSE to shutdown the Server \n";
     std::cout.flush(); //keeps data in memory 
-	
+	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
     //creates server
-    SocketServer server(3000);   
+    int port = std::rand() % (65535 - 1024 + 1) + 1024;
+    SocketServer server(port);   
+    std::cout <<port << std::endl;
 
     std::vector<SocketThread*> sockThreads; 
 

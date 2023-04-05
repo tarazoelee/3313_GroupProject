@@ -9,9 +9,11 @@ using namespace Sync;
 int main(void)
 {
 	std::string userInput = " ";
+	std:int port = 0;
 	std::cout << "I am a client" << std::endl;
+	std::cin >> port;
 
-	Socket socket("127.0.0.1",3000);
+	Socket socket("127.0.0.1",port);
 	
 
 	if(socket.Open()){
