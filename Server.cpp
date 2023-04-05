@@ -18,12 +18,13 @@ private:
     ByteArray data;
 
     bool& killThread; //creating reference to killThread
+    std::list<Socket*>& sockets; // list of connected sockets
 
 public:
     Socket& socket;
 
-    SocketThread(Socket& socket, bool& killThread)
-    : socket(socket), killThread(killThread) {}
+   SocketThread(Socket& socket, bool& killThread, std::list<Socket*>& sockets)
+    : socket(socket), killThread(killThread), sockets(sockets) {}
 
     ~SocketThread()
     {}
@@ -59,7 +60,14 @@ public:
                         std::cout<<"Client has closed...\n";
                     
                     }
-                    std::cout<<response<<std::endl;
+
+                     for (Socket* otherSocket : sockets) {
+                        if (otherSocket != &socket) {
+                            otherSocket->Write(response);
+                        }
+                    }
+
+                    //std::cout<<response<<std::endl;
                     socket.Write(response); //send back response message in all CAPS
 
                 }
@@ -79,7 +87,8 @@ public:
 class ServerThread : public Thread
 {
 private:
-    std::vector<SocketThread*>  sockThreads; //creating vector of threads on that socket so can have multiple open 
+    std::vector<SocketThread*>  sockThreads;
+    std::list<Socket*> sockets; // list of connected sockets
     bool killThread = false;
 public:
     SocketServer& server;
@@ -89,12 +98,12 @@ public:
 
     ~ServerThread()
     {
-        //Cleanup threads, killing them 
+        //Cleanup threads
         for (auto thread : sockThreads)
         {
             try
             {
-                //close the sockets
+                // close the sockets
                 Socket& toClose = thread->GetSocket();
                 toClose.Close();
                 delete thread;
@@ -104,24 +113,22 @@ public:
             }
         }
 
-        //the thread loops
         killThread = true;
     }
 
     virtual long ThreadMain()
     {
-        while(!killThread){ //if client hasn't closed socket, keep accepting input 
+        while(!killThread){
             try{
-                // Wait for a client socket connection
                 Socket* newConnection = new Socket(server.Accept());
+                sockets.push_back(newConnection); // add new socket to list of connected sockets
 
-                // Pass a reference to this pointer into a new socket thread
                 Socket& socketReference = *newConnection;
-                sockThreads.push_back(new SocketThread(socketReference, killThread));
+                sockThreads.push_back(new SocketThread(socketReference, killThread, sockets)); // pass list of sockets to new SocketThread instance
             }
             catch(...)
             {
-                killThread = true; //otherwise kill the socket 
+                killThread = true;
             }
         }
     }
@@ -142,21 +149,7 @@ int main(void)
         int serverPort = std::rand() % (65535 - 1024 + 1) + 1024;
         SocketServer server(serverPort); 
         std::cout << "Your Match Code: " + std::to_string(serverPort) << std::endl;
-        std::vector<SocketThread*> sockThreads; 
-
-        Socket socket("127.0.0.1", serverPort); //joining socket 
-        if(socket.Open()){ //if joining socket successful then output open 
-            std::cout << "Connected to socket" << std::endl;
-            std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to exit at any time." << std::endl;
-            while (true) {
-                std::string input;
-                std::getline(std::cin, input);  
-
-                //break if client writes close 
-                if (input == "CLOSE") {
-                        break; }
-            }   
-        } 
+         std::vector<SocketThread*> sockThreads; 
 
         //creating instance of serverThread class, with server and socketThread vector for this instance 
         ServerThread serverThread(server, sockThreads);
@@ -179,53 +172,48 @@ int main(void)
         //Wait for input to shutdown the server
         FlexWait cinWaiter(1, stdin);
 
-//         while (true) {
-//         std::string input;
-//         std::getline(std::cin, input);  
-
-//         //break if client writes close 
-//         if (input == "CLOSE") {
-//         break;
-//     }
-// }   
-    
-    server.Shutdown();
-        
-    } else if (createOrJoin == "J"){
-                std::cout << "Enter Match Code:" << std::endl;  
-                std::cin >> joinPort;
-                Socket socket("127.0.0.1", joinPort);
-                if(socket.Open()){
-                  std:: string test = " ";
-            std::cout << "Connected" << std::endl;
-            std::cin >> test;
-            socket.Write(ByteArray(test));
-
-            ByteArray alteredMessage;
-
-		//reads the return message from the Server
-		socket.Read(alteredMessage); 
-
-        std::cout<<"Converted Message: "<< alteredMessage.ToString()<<std::endl;
-                }             
-    
-                     while (true) {
-                        std::string input;
-                        std::getline(std::cin, input);  
+        while (true) {
+        std::string input;
+        std::getline(std::cin, input);  
 
         //break if client writes close 
         if (input == "CLOSE") {
         break;
     }
 }   
-                
-    }else {
-        //error
-    }
     
+    server.Shutdown();
+        
+    } else if (createOrJoin == "J"){
+            std::cout << "Enter Match Code:" << std::endl;  
+            std::cin >> joinPort;
+            Socket socket("127.0.0.1", joinPort);
+            if(socket.Open()){
+            std:: string test = " ";
+            std::cout << "Connected" << std::endl;
+            std::cin >> test;
+            socket.Write(ByteArray(test));
 
+            ByteArray alteredMessage;
 
+		    //reads the return message from the Server
+		    socket.Read(alteredMessage); 
 
+            std::cout<<"Converted Message: "<< alteredMessage.ToString()<<std::endl;
+            }             
+                while (true) {
+                std::string input;
+                std::getline(std::cin, input);  
+
+        //break if client writes close 
+        if (input == "CLOSE") {
+        break;
+    }
+}   
+}else {
+        //error
+}
+    
     //Output to client, ask for input and gives direction 
 	//std::cout << "Type CLOSE to shutdown the Server \n";
     //std::cout.flush(); //keeps data in memory 
