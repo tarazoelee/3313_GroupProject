@@ -5,6 +5,8 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include "socket.h"
+#include <iostream>
 
 using namespace Sync;
 
@@ -126,36 +128,81 @@ public:
 
 int main(void)
 {
-    //Output to client, ask for input and gives direction 
-    std::cout << "I am a server" << std::endl;
-	std::cout << "Type CLOSE to shutdown the Server \n";
-    std::cout.flush(); //keeps data in memory 
-	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    //creates server
-    int port = std::rand() % (65535 - 1024 + 1) + 1024;
-    SocketServer server(port);   
-    std::cout <<port << std::endl;
+    std::string userInput = " ";
+    std::string createOrJoin = " ";
+    int joinPort = 0;
+	std::cout << "Would you like to create (C) a match or join a match (J)" << std::endl;
+    std::cin >> createOrJoin;
 
-    std::vector<SocketThread*> sockThreads; 
+    if (createOrJoin == "C"){
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        int serverPort = std::rand() % (65535 - 1024 + 1) + 1024;
+        SocketServer server(serverPort); 
+        std::cout << "Your Match Code: " + std::to_string(serverPort) << std::endl;
+         std::vector<SocketThread*> sockThreads; 
 
-    //creating instance of serverThread class, with server and socketThread vector for this instance 
-    ServerThread serverThread(server, sockThreads);
+        //creating instance of serverThread class, with server and socketThread vector for this instance 
+        ServerThread serverThread(server, sockThreads);
 	
-    //Wait for input to shutdown the server
-    FlexWait cinWaiter(1, stdin);
+        //Wait for input to shutdown the server
+        FlexWait cinWaiter(1, stdin);
 
-    //turning input into string from client 
-   while (true) {
-    std::string input;
-    std::getline(std::cin, input);  
+        while (true) {
+        std::string input;
+        std::getline(std::cin, input);  
 
-    //break if client writes close 
-    if (input == "CLOSE") {
+        //break if client writes close 
+        if (input == "CLOSE") {
         break;
     }
 }   
     
     server.Shutdown();
+        
+    }else if (createOrJoin == "J"){
+                std::cout << "Enter Match Code:" << std::endl;  
+                std::cin >> joinPort;
+                Socket socket("127.0.0.1", joinPort);
+                if(socket.Open()){
+                    std::cout << "Connected" << std::endl;
+                     while (true) {
+                     std::string input;
+                    std::getline(std::cin, input);  
+
+        //break if client writes close 
+        if (input == "CLOSE") {
+        break;
+    }
+}   
+                }
+    }else {
+        //error
+    }
+    
+
+
+
+
+    //Output to client, ask for input and gives direction 
+	//std::cout << "Type CLOSE to shutdown the Server \n";
+    //std::cout.flush(); //keeps data in memory 
+	//std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+    //creates server
+    //int port = std::rand() % (65535 - 1024 + 1) + 1024;
+    //SocketServer server(port);   
+    //std::cout <<port << std::endl;
+
+    //std::vector<SocketThread*> sockThreads; 
+
+    //creating instance of serverThread class, with server and socketThread vector for this instance 
+    //ServerThread serverThread(server, sockThreads);
+	
+    //Wait for input to shutdown the server
+    //FlexWait cinWaiter(1, stdin);
+
+    //turning input into string from client 
+   
 
 }
