@@ -155,18 +155,47 @@ int main(void)
 
         Socket socket("127.0.0.1", serverPort);
         if(socket.Open()){
-            std:: string test = " ";
-            std::cout << "Connected" << std::endl;
-            std::cin >> test;
-            socket.Write(ByteArray(test));
+            std:: string choice = " ";
+            std::cout << "Write your choice of Rock, Paper, or Scissors. Write EXIT to exit the game." << std::endl;
+            std::cin >> choice;
+            socket.Write(ByteArray(choice));
 
             ByteArray alteredMessage;
 
 		//reads the return message from the Server
 		socket.Read(alteredMessage); 
-
-        std::cout<<"Opponent wrote: "<< alteredMessage.ToString()<<" You wrote: " << test <<std::endl;
+        std:: string opponentChoice = alteredMessage.ToString();
         
+        std::cout<< "Opponent wrote: " << opponentChoice<< " You wrote: " << choice <<std::endl;
+
+         if(opponentChoice == "Rock" && choice == "Scissors"){
+                std::cout << "You Lost..." << std::endl;  
+        }
+        else if(opponentChoice == "Rock" && choice == "Rock") {
+                std::cout << "It's a tie!" << std::endl;  
+        }
+        else if(opponentChoice == "Rock" && choice == "Paper") {
+                std::cout << "You Win!" << std::endl;  
+        }
+        else if(opponentChoice == "Scissors" && choice == "Scissors"){
+                std::cout << "It's a tie!" << std::endl;  
+        }
+        else if(opponentChoice == "Scissors" && choice == "Rock"){
+                std::cout << "You Win!" << std::endl;  
+        }
+        else if(opponentChoice == "Scissors" && choice == "Paper"){
+                std::cout << "You lost..." << std::endl;  
+        }
+        else if(opponentChoice == "Paper" && choice == "Scissors"){
+                std::cout << "You win!" << std::endl;  
+        }
+        else if(opponentChoice == "Paper" && choice == "Rock"){
+                std::cout << "You lost..." << std::endl;  
+        }
+        else if(opponentChoice == "Paper" && choice == "Paper"){
+                std::cout << "It's a tie!" << std::endl;  
+        }
+
         }
 
         //Wait for input to shutdown the server
@@ -190,7 +219,7 @@ int main(void)
             Socket socket("127.0.0.1", joinPort);
             if(socket.Open()){
             std:: string test = " ";
-            std::cout << "Connected" << std::endl;
+            std::cout << "Write your choice of Rock, Paper, or Scissors. Write EXIT to exit the game." << std::endl;
             std::cin >> test;
             socket.Write(ByteArray(test));
 
@@ -199,11 +228,42 @@ int main(void)
 		    //reads the return message from the Server
 		    socket.Read(alteredMessage); 
 
-            std::cout<<"Opponent wrote: "<< alteredMessage.ToString()<<" You wrote: " << test <<std::endl;
-            }             
-                while (true) {
-                std::string input;
-                std::getline(std::cin, input);  
+            std:: string opponentChoice2 = alteredMessage.ToString();
+            std::cout<<"Opponent wrote: "<< opponentChoice2 <<" You wrote: " << test <<std::endl;
+            }
+
+            // if(opponentChoice == "Rock" && test == "Scissors"){
+            //     std::cout << "You Lost..." << std::endl;  
+            // }
+            // else if(opponentChoice == "Rock" && choice == "Rock") {
+            //         std::cout << "It's a tie!" << std::endl;  
+            // }
+            // else if(opponentChoice == "Rock" && choice == "Paper") {
+            //         std::cout << "You Win!" << std::endl;  
+            // }
+            // else if(opponentChoice == "Scissors" && choice == "Scissors"){
+            //         std::cout << "It's a tie!" << std::endl;  
+            // }
+            // else if(opponentChoice == "Scissors" && choice == "Rock"){
+            //         std::cout << "You Win!" << std::endl;  
+            // }
+            // else if(opponentChoice == "Scissors" && choice == "Paper"){
+            //         std::cout << "You lost..." << std::endl;  
+            // }
+            // else if(opponentChoice == "Paper" && choice == "Scissors"){
+            //         std::cout << "You win!" << std::endl;  
+            // }
+            // else if(opponentChoice == "Paper" && choice == "Rock"){
+            //         std::cout << "You lost..." << std::endl;  
+            // }
+            // else if(opponentChoice2 == "Paper" && choice == "Paper"){
+            //         std::cout << "It's a tie!" << std::endl;  
+            // }
+
+            while (true) {
+            std::string input;
+            std::getline(std::cin, input);  
+            
 
         //break if client writes close 
         if (input == "CLOSE") {
