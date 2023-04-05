@@ -140,7 +140,21 @@ int main(void)
         int serverPort = std::rand() % (65535 - 1024 + 1) + 1024;
         SocketServer server(serverPort); 
         std::cout << "Your Match Code: " + std::to_string(serverPort) << std::endl;
-         std::vector<SocketThread*> sockThreads; 
+        std::vector<SocketThread*> sockThreads; 
+
+        Socket socket("127.0.0.1", serverPort); //joining socket 
+        if(socket.Open()){ //if joining socket successful then output open 
+            std::cout << "Connected to socket" << std::endl;
+            std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to exit at any time." << std::endl;
+            while (true) {
+                std::string input;
+                std::getline(std::cin, input);  
+
+                //break if client writes close 
+                if (input == "CLOSE") {
+                        break; }
+            }   
+        } 
 
         //creating instance of serverThread class, with server and socketThread vector for this instance 
         ServerThread serverThread(server, sockThreads);
@@ -148,15 +162,15 @@ int main(void)
         //Wait for input to shutdown the server
         FlexWait cinWaiter(1, stdin);
 
-        while (true) {
-        std::string input;
-        std::getline(std::cin, input);  
+//         while (true) {
+//         std::string input;
+//         std::getline(std::cin, input);  
 
-        //break if client writes close 
-        if (input == "CLOSE") {
-        break;
-    }
-}   
+//         //break if client writes close 
+//         if (input == "CLOSE") {
+//         break;
+//     }
+// }   
     
     server.Shutdown();
         
@@ -166,21 +180,21 @@ int main(void)
                 Socket socket("127.0.0.1", joinPort);
                 if(socket.Open()){
                     std::cout << "Connected" << std::endl;
+                    std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to exit at any time." << std::endl;
                      while (true) {
-                     std::string input;
-                    std::getline(std::cin, input);  
+                        std::string input;
+                        std::getline(std::cin, input);  
 
-        //break if client writes close 
-        if (input == "CLOSE") {
-        break;
-    }
-}   
-                }
+                        //break if client writes close 
+                        if (input == "CLOSE") {
+                        break;
+                    }
+                }   
+             }
     }else {
         //error
     }
     
-
 
 
 
