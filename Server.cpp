@@ -49,9 +49,9 @@ public:
                 while(socket.Read(data) > 0){ //if socket is not closed, read data that is sent back if data exists 
                     std::string response = data.ToString();
                     //convert string to upper case
-                    std::for_each(response.begin(), response.end(), [](char & c){
-                        c = ::toupper(c);
-                    });
+                   // std::for_each(response.begin(), response.end(), [](char & c){
+                    //  c = ::toupper(c);
+                    //});
                     
 
                     //checks if client sent EXIT message, displays that the client is closed on the server side
@@ -63,12 +63,11 @@ public:
 
                      for (Socket* otherSocket : sockets) {
                         if (otherSocket != &socket) {
-                            otherSocket->Write(response);
+                            otherSocket->Write(response); //writing what oyu wrote to the other socket 
                         }
                     }
 
                     //std::cout<<response<<std::endl;
-                    socket.Write(response); //send back response message in all CAPS
 
                 }
 
@@ -166,7 +165,8 @@ int main(void)
 		//reads the return message from the Server
 		socket.Read(alteredMessage); 
 
-        std::cout<<"Converted Message: "<< alteredMessage.ToString()<<std::endl;
+        std::cout<<"Opponent wrote: "<< alteredMessage.ToString()<<" You wrote: " << test <<std::endl;
+        
         }
 
         //Wait for input to shutdown the server
@@ -199,7 +199,7 @@ int main(void)
 		    //reads the return message from the Server
 		    socket.Read(alteredMessage); 
 
-            std::cout<<"Converted Message: "<< alteredMessage.ToString()<<std::endl;
+            std::cout<<"Opponent wrote: "<< alteredMessage.ToString()<<" You wrote: " << test <<std::endl;
             }             
                 while (true) {
                 std::string input;
