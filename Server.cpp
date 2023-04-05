@@ -51,6 +51,7 @@ public:
                     std::for_each(response.begin(), response.end(), [](char & c){
                         c = ::toupper(c);
                     });
+                    
 
                     //checks if client sent EXIT message, displays that the client is closed on the server side
                     std::string exit = "EXIT";
@@ -58,6 +59,7 @@ public:
                         std::cout<<"Client has closed...\n";
                     
                     }
+                    std::cout<<response<<std::endl;
                     socket.Write(response); //send back response message in all CAPS
 
                 }
@@ -144,7 +146,22 @@ int main(void)
 
         //creating instance of serverThread class, with server and socketThread vector for this instance 
         ServerThread serverThread(server, sockThreads);
-	
+
+        Socket socket("127.0.0.1", serverPort);
+        if(socket.Open()){
+            std:: string test = " ";
+            std::cout << "Connected" << std::endl;
+            std::cin >> test;
+            socket.Write(ByteArray(test));
+
+            ByteArray alteredMessage;
+
+		//reads the return message from the Server
+		socket.Read(alteredMessage); 
+
+        std::cout<<"Converted Message: "<< alteredMessage.ToString()<<std::endl;
+        }
+
         //Wait for input to shutdown the server
         FlexWait cinWaiter(1, stdin);
 
@@ -160,12 +177,24 @@ int main(void)
     
     server.Shutdown();
         
-    }else if (createOrJoin == "J"){
+    } else if (createOrJoin == "J"){
                 std::cout << "Enter Match Code:" << std::endl;  
                 std::cin >> joinPort;
                 Socket socket("127.0.0.1", joinPort);
                 if(socket.Open()){
-                    std::cout << "Connected" << std::endl;
+                  std:: string test = " ";
+            std::cout << "Connected" << std::endl;
+            std::cin >> test;
+            socket.Write(ByteArray(test));
+
+            ByteArray alteredMessage;
+
+		//reads the return message from the Server
+		socket.Read(alteredMessage); 
+
+        std::cout<<"Converted Message: "<< alteredMessage.ToString()<<std::endl;
+                }             
+    
                      while (true) {
                      std::string input;
                     std::getline(std::cin, input);  
@@ -175,7 +204,7 @@ int main(void)
         break;
     }
 }   
-                }
+                
     }else {
         //error
     }
