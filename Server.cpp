@@ -243,24 +243,4 @@ int main(void) {
     //error
   }
 
-  //Output to client, ask for input and gives direction 
-  //std::cout << "Type CLOSE to shutdown the Server \n";
-  //std::cout.flush(); //keeps data in memory 
-  //std::srand(static_cast<unsigned int>(std::time(nullptr)));
-
-  //creates server
-  //int port = std::rand() % (65535 - 1024 + 1) + 1024;
-  //SocketServer server(port);   
-  //std::cout <<port << std::endl;
-
-  //std::vector<SocketThread*> sockThreads; 
-
-  //creating instance of serverThread class, with server and socketThread vector for this instance 
-  //ServerThread serverThread(server, sockThreads);
-
-  //Wait for input to shutdown the server
-  //FlexWait cinWaiter(1, stdin);
-
-  //turning input into string from client 
-
 }
