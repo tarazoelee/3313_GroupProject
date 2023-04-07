@@ -154,25 +154,13 @@ int main(void) {
 
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
-      if (opponentChoice == "Rock" && choice == "Scissors") {
-        std::cout << "You Lost..." << std::endl;
-      } else if (opponentChoice == "Rock" && choice == "Rock") {
-        std::cout << "It's a tie!" << std::endl;
-      } else if (opponentChoice == "Rock" && choice == "Paper") {
-        std::cout << "You Win!" << std::endl;
-      } else if (opponentChoice == "Scissors" && choice == "Scissors") {
-        std::cout << "It's a tie!" << std::endl;
-      } else if (opponentChoice == "Scissors" && choice == "Rock") {
-        std::cout << "You Win!" << std::endl;
-      } else if (opponentChoice == "Scissors" && choice == "Paper") {
-        std::cout << "You lost..." << std::endl;
-      } else if (opponentChoice == "Paper" && choice == "Scissors") {
-        std::cout << "You win!" << std::endl;
-      } else if (opponentChoice == "Paper" && choice == "Rock") {
-        std::cout << "You lost..." << std::endl;
-      } else if (opponentChoice == "Paper" && choice == "Paper") {
-        std::cout << "It's a tie!" << std::endl;
-      }
+ if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
+          std::cout << "You Win!" << std::endl;
+        } else if (opponentChoice == "Rock" && choice == "Scissors" || opponentChoice == "Paper" && choice == "Rock" || opponentChoice == "Scissors" && choice == "Paper") {
+          std::cout << "You Lose!" << std::endl;
+        } else if (opponentChoice == choice) {
+          std::cout << "It's a tie!" << std::endl;
+        }
 
     }
 
@@ -209,25 +197,13 @@ int main(void) {
 
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
-      if (opponentChoice == "Rock" && choice == "Scissors") {
-        std::cout << "You Lost..." << std::endl;
-      } else if (opponentChoice == "Rock" && choice == "Rock") {
-        std::cout << "It's a tie!" << std::endl;
-      } else if (opponentChoice == "Rock" && choice == "Paper") {
-        std::cout << "You Win!" << std::endl;
-      } else if (opponentChoice == "Scissors" && choice == "Scissors") {
-        std::cout << "It's a tie!" << std::endl;
-      } else if (opponentChoice == "Scissors" && choice == "Rock") {
-        std::cout << "You Win!" << std::endl;
-      } else if (opponentChoice == "Scissors" && choice == "Paper") {
-        std::cout << "You lost..." << std::endl;
-      } else if (opponentChoice == "Paper" && choice == "Scissors") {
-        std::cout << "You win!" << std::endl;
-      } else if (opponentChoice == "Paper" && choice == "Rock") {
-        std::cout << "You lost..." << std::endl;
-      } else if (opponentChoice == "Paper" && choice == "Paper") {
-        std::cout << "It's a tie!" << std::endl;
-      }
+ if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
+          std::cout << "You Win!" << std::endl;
+        } else if (opponentChoice == "Rock" && choice == "Scissors" || opponentChoice == "Paper" && choice == "Rock" || opponentChoice == "Scissors" && choice == "Paper") {
+          std::cout << "You Lose!" << std::endl;
+        } else if (opponentChoice == choice) {
+          std::cout << "It's a tie!" << std::endl;
+        }
     }
 
     while (true) {
