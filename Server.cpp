@@ -131,6 +131,8 @@ int main(void) {
   if (createOrJoin == "C") {
     std::srand(static_cast < unsigned int > (std::time(nullptr)));
     int serverPort = std::rand() % (65535 - 1024 + 1) + 1024;
+    int player1Score = 0;
+    int player2Score = 0;
     SocketServer server(serverPort);
     std::cout << "Your Match Code: " + std::to_string(serverPort) << std::endl;
     std::vector < SocketThread * > sockThreads;
@@ -156,13 +158,18 @@ int main(void) {
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
  if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
+            player1Score++;
           std::cout << "You Win!" << std::endl;
+          std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
           std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == "Rock" && choice == "Scissors" || opponentChoice == "Paper" && choice == "Rock" || opponentChoice == "Scissors" && choice == "Paper") {
+            player2Score++;
           std::cout << "You Lose!" << std::endl;
+          std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
           std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == choice) {
           std::cout << "It's a tie!" << std::endl;
+          std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
            std::cout << "-----------------------" << std::endl;
         }
         gamesPlayed++;
@@ -189,6 +196,8 @@ int main(void) {
     std::cout << "Enter Match Code:" << std::endl;
     std::cin >> joinPort;
     Socket socket("127.0.0.1", joinPort);
+    int player1Score = 0;
+    int player2Score = 0;
     if (socket.Open()) {
         int gamesPlayed = 0;
         while (gamesPlayed < 5) {
@@ -205,14 +214,19 @@ int main(void) {
 
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
- if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
+if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
+            player1Score++;
           std::cout << "You Win!" << std::endl;
+          std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
           std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == "Rock" && choice == "Scissors" || opponentChoice == "Paper" && choice == "Rock" || opponentChoice == "Scissors" && choice == "Paper") {
+            player2Score++;
           std::cout << "You Lose!" << std::endl;
+          std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
           std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == choice) {
           std::cout << "It's a tie!" << std::endl;
+          std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
            std::cout << "-----------------------" << std::endl;
         }
         gamesPlayed++;
