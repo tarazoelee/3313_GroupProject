@@ -1,4 +1,4 @@
-How do I loop this so that after the first result that it outputs, it goes back to accepting an input again: #include "thread.h"
+#include "thread.h"
 
   #include "socketserver.h"
 
