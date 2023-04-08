@@ -59,7 +59,6 @@ class SocketThread: public Thread {
           std::string exit = "EXIT";
           if (response == exit) {
             std::cout << "Client has closed...\n";
-
           }
 
           for (Socket * otherSocket: sockets) {
@@ -141,6 +140,8 @@ int main(void) {
 
     Socket socket("127.0.0.1", serverPort);
     if (socket.Open()) {
+        int gamesPlayed = 0;
+        while (gamesPlayed < 5) {
       std::string choice = " ";
       std::cout << "Write your choice of Rock, Paper, or Scissors. Write EXIT to exit the game." << std::endl;
       std::cin >> choice;
@@ -156,10 +157,15 @@ int main(void) {
 
  if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
           std::cout << "You Win!" << std::endl;
+          std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == "Rock" && choice == "Scissors" || opponentChoice == "Paper" && choice == "Rock" || opponentChoice == "Scissors" && choice == "Paper") {
           std::cout << "You Lose!" << std::endl;
+          std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == choice) {
           std::cout << "It's a tie!" << std::endl;
+           std::cout << "-----------------------" << std::endl;
+        }
+        gamesPlayed++;
         }
 
     }
@@ -184,6 +190,8 @@ int main(void) {
     std::cin >> joinPort;
     Socket socket("127.0.0.1", joinPort);
     if (socket.Open()) {
+        int gamesPlayed = 0;
+        while (gamesPlayed < 5) {
       std::string choice = " ";
       std::cout << "Write your choice of Rock, Paper, or Scissors. Write EXIT to exit the game." << std::endl;
       std::cin >> choice;
@@ -199,11 +207,17 @@ int main(void) {
 
  if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
           std::cout << "You Win!" << std::endl;
+          std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == "Rock" && choice == "Scissors" || opponentChoice == "Paper" && choice == "Rock" || opponentChoice == "Scissors" && choice == "Paper") {
           std::cout << "You Lose!" << std::endl;
+          std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == choice) {
           std::cout << "It's a tie!" << std::endl;
+           std::cout << "-----------------------" << std::endl;
         }
+        gamesPlayed++;
+        }
+
     }
 
     while (true) {
