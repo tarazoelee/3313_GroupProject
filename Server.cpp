@@ -190,16 +190,6 @@ int main(void) {
     //Wait for input to shutdown the server
     FlexWait cinWaiter(1, stdin);
 
-    // while (true) {
-    //   std::string input;
-    //   std::getline(std::cin, input);
-
-    //   //break if client writes close 
-    //   if (input == "CLOSE") {
-    //     break;
-    //   }
-    // }
-
     server.Shutdown();
 
   } else if (createOrJoin == "J") {
@@ -258,16 +248,6 @@ int main(void) {
 
      //Wait for input to shutdown the server
     FlexWait cinWaiter(1, stdin);
-
-    // while (true) {
-    //   std::string input;
-    //   std::getline(std::cin, input);
-
-    //   //break if client writes close 
-    //   if (input == "CLOSE") {
-    //     break;
-    //   }
-    // }
 
   } else {
     //error
