@@ -51,7 +51,7 @@ class SocketThread: public Thread {
 
           while (socket.Read(data) > 0) {
             std::string response = data.ToString();
-            if (response == "EXIT") {
+            if (response == "CLOSE") {
               std::cout << "Client has closed...\n";
               socket.Close();
               sockets.remove(&socket);  // remove the socket from the list of connected sockets
@@ -190,15 +190,15 @@ int main(void) {
     //Wait for input to shutdown the server
     FlexWait cinWaiter(1, stdin);
 
-    while (true) {
-      std::string input;
-      std::getline(std::cin, input);
+    // while (true) {
+    //   std::string input;
+    //   std::getline(std::cin, input);
 
-      //break if client writes close 
-      if (input == "CLOSE") {
-        break;
-      }
-    }
+    //   //break if client writes close 
+    //   if (input == "CLOSE") {
+    //     break;
+    //   }
+    // }
 
     server.Shutdown();
 
@@ -259,15 +259,15 @@ int main(void) {
      //Wait for input to shutdown the server
     FlexWait cinWaiter(1, stdin);
 
-    while (true) {
-      std::string input;
-      std::getline(std::cin, input);
+    // while (true) {
+    //   std::string input;
+    //   std::getline(std::cin, input);
 
-      //break if client writes close 
-      if (input == "CLOSE") {
-        break;
-      }
-    }
+    //   //break if client writes close 
+    //   if (input == "CLOSE") {
+    //     break;
+    //   }
+    // }
 
   } else {
     //error
