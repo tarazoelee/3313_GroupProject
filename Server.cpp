@@ -249,8 +249,6 @@ int main(void) {
         gamesPlayed++;
         }
 
-    } else {
-        socket.Close();
     }
 
      //Wait for input to shutdown the server
