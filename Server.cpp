@@ -41,44 +41,41 @@ class SocketThread: public Thread {
 
   //Continuosly reads data from the Socket object, converts it to uppercase, and sends it back to the client.
   virtual long ThreadMain() {
-    //while the client is still open 
-    while (!killThread) {
-      try {
-        if (killThread) { //check if kill thread is true, if yes then close the socket 
-          socket.Close();
-          delete this;
-        }
-        while (socket.Read(data) > 0) { //if socket is not closed, read data that is sent back if data exists 
-          std::string response = data.ToString();
-          //convert string to upper case
-          // std::for_each(response.begin(), response.end(), [](char & c){
-          //  c = ::toupper(c);
-          //});
-
-          //checks if client sent EXIT message, displays that the client is closed on the server side
-          std::string exit = "EXIT";
-          if (response == exit) {
-            std::cout << "Client has closed...\n";
+      while (!killThread) {
+        try {
+          if (killThread) {
+            socket.Close();
+            sockets.remove(&socket);  // remove the socket from the list of connected sockets
+            delete this;
           }
-          
 
-          for (Socket * otherSocket: sockets) {
-            if (otherSocket != & socket) {
-              otherSocket -> Write(response); //writing what oyu wrote to the other socket 
+          while (socket.Read(data) > 0) {
+            std::string response = data.ToString();
+            if (response == "EXIT") {
+              std::cout << "Client has closed...\n";
+              socket.Close();
+              sockets.remove(&socket);  // remove the socket from the list of connected sockets
+              delete this;
+              return 0;  // exit the thread
+            }
+
+            // std::for_each(response.begin(), response.end(), [](char& c){
+            //   c = ::toupper(c);
+            // });
+
+            for (Socket* otherSocket : sockets) {
+              if (otherSocket != &socket) {
+                otherSocket->Write(response);
+              }
             }
           }
-
-          //std::cout<<response<<std::endl;
-
+        } catch (...) {
+          killThread = true;
         }
-
-      } catch (...) {
-        killThread = true; //if error then kill thread 
       }
-    }
 
-    return 0;
-  }
+      return 0;
+    }
 };
 
 //defines the ServerThread class that extends Thread class, it is responsible for handling server operations
@@ -146,8 +143,13 @@ int main(void) {
         int gamesPlayed = 0;
         while (gamesPlayed < 5) {
       std::string choice = " ";
-      std::cout << "Write your choice of Rock, Paper, or Scissors. Write EXIT to exit the game." << std::endl;
+      std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to close the game." << std::endl;
       std::cin >> choice;
+
+      if (choice == "CLOSE") {
+          break;
+        }
+
       socket.Write(ByteArray(choice));
 
       ByteArray alteredMessage;
@@ -212,8 +214,13 @@ int main(void) {
         int gamesPlayed = 0;
         while (gamesPlayed < 5) {
       std::string choice = " ";
-      std::cout << "Write your choice of Rock, Paper, or Scissors. Write EXIT to exit the game." << std::endl;
+      std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to close the game." << std::endl;
       std::cin >> choice;
+
+      if (choice == "CLOSE") {
+          break;
+        }
+
       socket.Write(ByteArray(choice));
 
       ByteArray alteredMessage;
