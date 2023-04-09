@@ -59,10 +59,6 @@ class SocketThread: public Thread {
               return 0;  // exit the thread
             }
 
-            // std::for_each(response.begin(), response.end(), [](char& c){
-            //   c = ::toupper(c);
-            // });
-
             for (Socket* otherSocket : sockets) {
               if (otherSocket != &socket) {
                 otherSocket->Write(response);
