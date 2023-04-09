@@ -60,6 +60,7 @@ class SocketThread: public Thread {
           if (response == exit) {
             std::cout << "Client has closed...\n";
           }
+          
 
           for (Socket * otherSocket: sockets) {
             if (otherSocket != & socket) {
@@ -159,18 +160,25 @@ int main(void) {
 
  if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
             player1Score++;
+             std::cout << "-----------------------" << std::endl;
           std::cout << "You Win!" << std::endl;
           std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
           std::cout << "-----------------------" << std::endl;
         } else if (opponentChoice == "Rock" && choice == "Scissors" || opponentChoice == "Paper" && choice == "Rock" || opponentChoice == "Scissors" && choice == "Paper") {
             player2Score++;
+             std::cout << "-----------------------" << std::endl;
           std::cout << "You Lose!" << std::endl;
           std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
           std::cout << "-----------------------" << std::endl;
-        } else if (opponentChoice == choice) {
+        } else if (opponentChoice == "Rock" && choice == "Rock" || opponentChoice == "Paper" && choice == "Paper" || opponentChoice == "Scissors" && choice == "Scissors") {
+             std::cout << "-----------------------" << std::endl;
           std::cout << "It's a tie!" << std::endl;
           std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
            std::cout << "-----------------------" << std::endl;
+        } else {
+             std::cout << "-----------------------" << std::endl;
+             std::cout << "!! Invalid input, please try again !!" << std::endl;
+              std::cout << "-----------------------" << std::endl;
         }
         gamesPlayed++;
         }
@@ -234,6 +242,9 @@ if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" &
 
     }
 
+     //Wait for input to shutdown the server
+    FlexWait cinWaiter(1, stdin);
+
     while (true) {
       std::string input;
       std::getline(std::cin, input);
@@ -243,6 +254,7 @@ if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" &
         break;
       }
     }
+
   } else {
     //error
   }
