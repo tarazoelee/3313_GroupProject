@@ -102,12 +102,17 @@ class ServerThread: public Thread {
   virtual long ThreadMain() {
     while (!killThread) {
       try {
+        while(sockets.size() < 2) {
         Socket * newConnection = new Socket(server.Accept());
         sockets.push_back(newConnection); // add new socket to list of connected sockets
 
         Socket & socketReference = * newConnection;
         sockThreads.push_back(new SocketThread(socketReference, killThread, sockets)); // pass list of sockets to new SocketThread instance
-      } catch (...) {
+        }
+        server.Shutdown();
+      } catch (const std::exception & ex) {
+    std::cerr << "Error accepting new connection: " << ex.what() << std::endl;
+}catch (...) {
         killThread = true;
       }
     }
