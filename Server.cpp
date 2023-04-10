@@ -111,16 +111,18 @@ class ServerThread: public Thread {
         }
         server.Shutdown();
       } catch (const std::exception & ex) {
-    std::cerr << "Error accepting new connection: " << ex.what() << std::endl;
-}catch (...) {
-        killThread = true;
-      }
+    std::cerr << "Caught exception: " << ex.what() << std::endl;
+} catch (const std::basic_string<char>& str) {
+    std::cerr << "Caught basic_string exception: " << str << std::endl;
+} catch (...) {
+    std::cerr << "Caught unknown exception" << std::endl;
+}
     }
   }
 };
 
 int main(void) {
-
+try{
   std::string userInput = " ";
   std::string createOrJoin = " ";
   int joinPort = 0;
@@ -253,5 +255,8 @@ int main(void) {
   } else {
     //error
   }
+}catch(...){
+    std::cerr << "An error occurred. Please try again." << std::endl;
+}
 
 }
