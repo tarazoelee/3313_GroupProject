@@ -256,7 +256,7 @@ try{
     //error
   }
 }catch(...){
-    std::cerr << "An error occurred. Please try again." << std::endl;
+    std::cerr << "An error occurred. Please try again later." << std::endl;
 }
 
 }
