@@ -120,8 +120,7 @@ class ServerThread: public Thread {
 };
 
 int main(void) {
- while (true) {
-try{
+
   std::string userInput = " ";
   std::string createOrJoin = " ";
   int joinPort = 0;
@@ -254,9 +253,5 @@ try{
   } else {
     //error
   }
-} catch (...) {
-      std::cerr << "An error occurred. Restarting program." << std::endl;
-}
- }
 
 }
