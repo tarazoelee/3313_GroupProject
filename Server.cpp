@@ -84,10 +84,11 @@ class SocketThread: public Thread {
                 otherSocket->Write(response);
               }
             }
+
             std::string close = "CLOSE";
             if (response == close){
-              std::cout << "Opponent exited..." << std::endl;
-              killThread = true;
+              std::cout << "Opponent exited..." << std::endl; //this is working but need to actually close now 
+             // killThread = true;
             }
           }
         } catch (...) {
@@ -113,12 +114,13 @@ class ServerThread: public Thread {
     for (auto thread: sockThreads) {
       try {
         // close the sockets
-        Socket & toClose = thread -> GetSocket();
+        Socket& toClose = thread->GetSocket();
         toClose.Close();
-        //delete thread;
-      } catch (...) {
+      } 
+      catch (...) {
+        //if already ended will throw an error 
          std::cout << "erroring" << std::endl;
-        // killThread = true;
+         ///killThread = true;
       }
     }
     //TERMINATE THE THREAD LOOPS
@@ -129,16 +131,17 @@ class ServerThread: public Thread {
     while (true) {
 
       try {
-         // Wait for a client socket connection
-        while(sockets.size() < 2) {
-        Socket * newConnection = new Socket(server.Accept());
-        sockets.push_back(newConnection); // add new socket to list of connected sockets
+          // Wait for a client socket connection
+          while(sockets.size() < 2) {
+              Socket * newConnection = new Socket(server.Accept());
+              sockets.push_back(newConnection); // add new socket to list of connected sockets
 
-        // Pass a reference to this pointer into a new socket thread
-        Socket & socketReference = * newConnection;
-        sockThreads.push_back(new SocketThread(socketReference, killThread, sockets)); // pass list of sockets to new SocketThread instance
-        }
-        server.Shutdown();
+              // Pass a reference to this pointer into a new socket thread
+              Socket & socketReference = * newConnection;
+              sockThreads.push_back(new SocketThread(socketReference, killThread, sockets)); // pass list of sockets to new SocketThread instance
+          }
+      server.Shutdown();
+
       } catch (const std::exception & ex) {
         std::cerr << "Caught exception: " << ex.what() << std::endl;
     } catch (const std::basic_string<char>& str) {
@@ -184,8 +187,6 @@ try{
 
         if (choice == "CLOSE") {
            std::cout << "Closing server..." << std::endl;
-           //serverThread.killThread = true;
-           //serverThread.Join(); // wait for server thread to terminate
            server.Shutdown();
            break;
         }
@@ -195,11 +196,6 @@ try{
         //reads the return message from the Server
         socket.Read(alteredMessage);
         std::string opponentChoice = alteredMessage.ToString();
-        if (opponentChoice == "CLOSE"){
-          std::cout << "Opponent exited" << std::endl;
-          server.Shutdown();
-          return 0;
-        }
 
         std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
@@ -236,11 +232,6 @@ try{
     }
   } 
 
-/*
-    //Wait for input to shutdown the server
-    FlexWait cinWaiter(1, stdin);
-    server.Shutdown();
-*/
   else if (createOrJoin == "J") {
     std::cout << "Enter Match Code:" << std::endl;
     std::cin >> joinPort;
