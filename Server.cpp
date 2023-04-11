@@ -42,6 +42,9 @@ class SocketThread: public Thread {
   //Continuosly reads data from the Socket object, converts it to uppercase, and sends it back to the client.
   virtual long ThreadMain() {
       while (!killThread) {
+        if(killThread){
+          break;
+        }
         try {
           /*
           if (killThread) {
@@ -52,9 +55,13 @@ class SocketThread: public Thread {
                */
           while (socket.Read(data) > 0) { //if socket is not closed, read data that is sent back if data exists 
             std::string response = data.ToString();
-            std::cout << "response";
 
-            //std::string close = "CLOSE";
+            std::string close = "CLOSE";
+            if (response == close){
+              std::cout << "Closing the application.." << std::endl;
+              killThread = true;
+              break;
+            }
              /*
             if (response == close) {
               std::cout << "Opponent has closed.. \n";
