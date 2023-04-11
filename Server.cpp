@@ -53,7 +53,7 @@ class SocketThread: public Thread {
             std::string response = data.ToString();
 
             if (response == "CLOSE") {
-              std::cout << "Client has closed...\n";
+              std::cout << "Closing...\n";
               socket.Close();
               sockets.remove(&socket);  // remove the socket from the list of connected sockets
               try{
