@@ -157,7 +157,7 @@ try{
       socket.Write(ByteArray(choice));
 
         if (choice == "CLOSE") {
-          break;
+           std::cout << "Closing here..." << std::endl;
         }
 
       ByteArray alteredMessage;
@@ -185,7 +185,11 @@ try{
           std::cout << "It's a tie!" << std::endl;
           std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
            std::cout << "-----------------------" << std::endl;
-        } else {
+        }
+         else if (opponentChoice == "CLOSE"){
+          std::cout << "Opponent exited" << std::endl;
+        }
+        else {
              std::cout << "-----------------------" << std::endl;
              std::cout << "!! Invalid input, please try again !!" << std::endl;
               std::cout << "-----------------------" << std::endl;
@@ -214,8 +218,8 @@ try{
       std::cin >> choice;
 
       if (choice == "CLOSE") {
-          break;
-        }
+           std::cout << "Closing here..." << std::endl;
+      }
 
       socket.Write(ByteArray(choice));
 
@@ -244,7 +248,11 @@ try{
           std::cout << "It's a tie!" << std::endl;
           std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
            std::cout << "-----------------------" << std::endl;
-        } else {
+        } 
+        else if (opponentChoice == "CLOSE"){
+          std::cout << "Opponent exited" << std::endl;
+        }
+        else {
              std::cout << "-----------------------" << std::endl;
              std::cout << "!! Invalid input, please try again !!" << std::endl;
               std::cout << "-----------------------" << std::endl;
