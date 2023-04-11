@@ -56,12 +56,6 @@ class SocketThread: public Thread {
           while (socket.Read(data) > 0) { //if socket is not closed, read data that is sent back if data exists 
             std::string response = data.ToString();
 
-            std::string close = "CLOSE";
-            if (response == close){
-              std::cout << "Closing the application.." << std::endl;
-              killThread = true;
-              break;
-            }
              /*
             if (response == close) {
               std::cout << "Opponent has closed.. \n";
@@ -89,6 +83,11 @@ class SocketThread: public Thread {
               if (otherSocket != &socket) {
                 otherSocket->Write(response);
               }
+            }
+            std::string close = "CLOSE";
+            if (response == close){
+              std::cout << "Opponent exited..." << std::endl;
+              killThread = true;
             }
           }
         } catch (...) {
@@ -183,16 +182,15 @@ try{
         std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to close the game." << std::endl;
         std::cin >> choice;
 
-        socket.Write(ByteArray(choice));
-
         if (choice == "CLOSE") {
            std::cout << "Closing server..." << std::endl;
            //serverThread.killThread = true;
            //serverThread.Join(); // wait for server thread to terminate
            server.Shutdown();
-           return 0;
            break;
         }
+
+        socket.Write(ByteArray(choice)); //keep this here so that doesn't write to the socket if closed 
 
         //reads the return message from the Server
         socket.Read(alteredMessage);
@@ -234,8 +232,10 @@ try{
         gamesPlayed++;
 
       }
+      server.Shutdown(); //break out of while loops
     }
   } 
+
 /*
     //Wait for input to shutdown the server
     FlexWait cinWaiter(1, stdin);
