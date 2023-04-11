@@ -140,7 +140,7 @@ class ServerThread: public Thread {
               Socket & socketReference = * newConnection;
               sockThreads.push_back(new SocketThread(socketReference, killThread, sockets)); // pass list of sockets to new SocketThread instance
           }
-      server.Shutdown();
+        server.Shutdown();
 
       } catch (const std::exception & ex) {
         std::cerr << "Caught exception: " << ex.what() << std::endl;
@@ -187,7 +187,18 @@ try{
 
         if (choice == "CLOSE") {
            std::cout << "Closing server..." << std::endl;
-           server.Shutdown();
+           /*
+          int result = shutdown(socket, 0);
+          if (result == 0) {
+                // shutdown successful
+                 std::cout << "Closed successfully." << std::endl;
+            } else {
+                // handle error
+                 std::cout << "ERROR" << std::endl;
+            }
+          socket.Close();
+          server.Shutdown();
+           */
            break;
         }
 
@@ -248,24 +259,26 @@ try{
 
         socket.Write(ByteArray(choice));
         
-        if (choice == "CLOSE") {
+        if (choice == "CLOSE") { //CLOSES CLIENT SIDE AND SENDS MESSAGE THAT CLIENT HAS EXITED 
           std::cout << "Closing client..." << std::endl;
-          //serverThread.killThread = true;
-          return 0;
+          /*
+          int result = shutdown(socket, 0);
+          if (result == 0) {
+                // shutdown successful
+                 std::cout << "Closed successfully." << std::endl;
+            } else {
+                // handle error
+                 std::cout << "ERROR" << std::endl;
+            }
+          socket.Close();
+          */
           break;
-          //THIS WORKS 
       }
 
       ByteArray alteredMessage;
 
       socket.Read(alteredMessage); //reads the return message from the Server
       std::string opponentChoice = alteredMessage.ToString();
-       if (opponentChoice == "CLOSE"){
-          std::cout << "Opponent exited" << std::endl;
-          return 0;
-          break;
-        }
-
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
       if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
@@ -287,9 +300,6 @@ try{
           std::cout << "It's a tie!" << std::endl;
           std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
           std::cout << "-----------------------" << std::endl;
-      } 
-      else if (opponentChoice == "CLOSE"){
-          std::cout << "Opponent exited" << std::endl;
       }
       else {
           std::cout << "-----------------------" << std::endl;
