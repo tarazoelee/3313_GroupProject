@@ -51,11 +51,16 @@ class SocketThread: public Thread {
 
           while (socket.Read(data) > 0) {
             std::string response = data.ToString();
+
             if (response == "CLOSE") {
               std::cout << "Client has closed...\n";
               socket.Close();
               sockets.remove(&socket);  // remove the socket from the list of connected sockets
+              try{
               delete this;
+              } catch(const std::exception& e){
+                std::cerr << "Server has closed." << std::endl;
+              }
               return 0;  // exit the thread
             }
 
@@ -149,11 +154,11 @@ try{
       std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to close the game." << std::endl;
       std::cin >> choice;
 
-      if (choice == "CLOSE") {
+      socket.Write(ByteArray(choice));
+
+        if (choice == "CLOSE") {
           break;
         }
-
-      socket.Write(ByteArray(choice));
 
       ByteArray alteredMessage;
 
