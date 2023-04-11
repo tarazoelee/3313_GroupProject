@@ -49,18 +49,28 @@ class SocketThread: public Thread {
             delete this;
           }
 
-          while (socket.Read(data) > 0) {
+          while (socket.Read(data) > 0) { //if socket is not closed, read data that is sent back if data exists 
             std::string response = data.ToString();
 
-            if (response == "CLOSE") {
-              std::cout << "Closing...\n";
-              socket.Close();
-              sockets.remove(&socket);  // remove the socket from the list of connected sockets
+             std::string close = "CLOSE";
+            if (response == close) {
+              std::cout << "Opponent has closed.. \n";
+              killThread = true;
+               break;
+              //socket.Close();
+             // sockets.remove(&socket);  // remove the socket from the list of connected sockets
+             /*
               try{
-              delete this;
-              } catch(const std::exception& e){
+                 std::cout << "trying";
+                 socket.Close();
+                 sockets.remove(&socket);
+                delete this;
+              } 
+              catch(const std::exception& e){
                 std::cerr << "Server has closed." << std::endl;
               }
+              */
+
               return 0;  // exit the thread
             }
 
@@ -97,6 +107,7 @@ class ServerThread: public Thread {
         toClose.Close();
         delete thread;
       } catch (...) {
+         std::cout << "erroring" << std::endl;
         killThread = true;
       }
     }
@@ -116,12 +127,12 @@ class ServerThread: public Thread {
         }
         server.Shutdown();
       } catch (const std::exception & ex) {
-    std::cerr << "Caught exception: " << ex.what() << std::endl;
-} catch (const std::basic_string<char>& str) {
-    std::cerr << "Caught basic_string exception: " << str << std::endl;
-} catch (...) {
-    std::cerr << "Caught unknown exception" << std::endl;
-}
+        std::cerr << "Caught exception: " << ex.what() << std::endl;
+    } catch (const std::basic_string<char>& str) {
+        std::cerr << "Caught basic_string exception: " << str << std::endl;
+    } catch (...) {
+        std::cerr << "Caught unknown exception" << std::endl;
+    }
     }
   }
 };
@@ -147,6 +158,7 @@ try{
     ServerThread serverThread(server, sockThreads);
 
     Socket socket("127.0.0.1", serverPort);
+
     if (socket.Open()) {
         int gamesPlayed = 0;
         while (gamesPlayed < 5) {
@@ -158,6 +170,7 @@ try{
 
         if (choice == "CLOSE") {
            std::cout << "Closing here..." << std::endl;
+           break;
         }
 
       ByteArray alteredMessage;
@@ -168,7 +181,7 @@ try{
 
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
- if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
+  if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
             player1Score++;
              std::cout << "-----------------------" << std::endl;
           std::cout << "You Win!" << std::endl;
@@ -186,7 +199,7 @@ try{
           std::cout << "Opponent score: " << player2Score << ", Your score: " << player1Score << std::endl;
            std::cout << "-----------------------" << std::endl;
         }
-         else if (opponentChoice == "CLOSE"){
+        else if (opponentChoice == "CLOSE"){
           std::cout << "Opponent exited" << std::endl;
         }
         else {
@@ -219,6 +232,8 @@ try{
 
       if (choice == "CLOSE") {
            std::cout << "Closing here..." << std::endl;
+          //socket.Close();b
+          break;
       }
 
       socket.Write(ByteArray(choice));
@@ -268,8 +283,8 @@ try{
   } else {
     //error
   }
-}catch(...){
-    std::cerr << "An error occurred. Please try again later." << std::endl;
-}
+  }catch(...){
+      std::cerr << "An error occurred. Please try again later." << std::endl;
+  }
 
 }
