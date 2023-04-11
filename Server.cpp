@@ -88,7 +88,19 @@ class SocketThread: public Thread {
             std::string close = "CLOSE";
             if (response == close){
               std::cout << "Opponent exited..." << std::endl; //this is working but need to actually close now 
-             // killThread = true;
+              int result = shutdown(socket, 0);
+                if (result == 0) {
+                      // shutdown successful
+                      std::cout << "Closed successfully." << std::endl;
+                  } else {
+                      // handle error
+                      std::cout << "ERROR" << std::endl;
+                }
+              
+              socket.Close();
+                for (Socket* otherSocket : sockets) {  //
+                  otherSocket -> Close(); //close the other socket as well 
+            }
             }
           }
         } catch (...) {
@@ -199,7 +211,7 @@ try{
           socket.Close();
           server.Shutdown();
            */
-           break;
+          // break;
         }
 
         socket.Write(ByteArray(choice)); //keep this here so that doesn't write to the socket if closed 
