@@ -42,9 +42,6 @@ class SocketThread: public Thread {
   //Continuosly reads data from the Socket object, converts it to uppercase, and sends it back to the client.
   virtual long ThreadMain() {
       while (!killThread) {
-        if(killThread){
-          break;
-        }
         try {
           /*
           if (killThread) {
@@ -91,16 +88,13 @@ class SocketThread: public Thread {
               int result = shutdown(socket, 0);
                 if (result == 0) {
                       // shutdown successful
+                      socket.Close();
                       std::cout << "Closed successfully." << std::endl;
-                  } else {
+                } else {
                       // handle error
-                      std::cout << "ERROR" << std::endl;
+                      std::cout << "Could not shutdown socket" << std::endl;
                 }
-              
-              socket.Close();
-                for (Socket* otherSocket : sockets) {  //
-                  otherSocket -> Close(); //close the other socket as well 
-            }
+              break;
             }
           }
         } catch (...) {
@@ -111,18 +105,20 @@ class SocketThread: public Thread {
     }
 };
 
+
 //defines the ServerThread class that extends Thread class, it is responsible for handling server operations
 class ServerThread: public Thread {
   private: 
+    SocketServer & server;
     std::vector < SocketThread * > sockThreads;
     std::list < Socket * > sockets; // list of connected sockets
-  public: 
     bool killThread = false;
-    SocketServer & server;
+  public: 
     ServerThread(SocketServer & server, std::vector < SocketThread * > sockThreads): server(server),
     sockThreads(sockThreads) {}
 
   ~ServerThread() {
+    // Close the client sockets
     for (auto thread: sockThreads) {
       try {
         // close the sockets
@@ -141,7 +137,6 @@ class ServerThread: public Thread {
 
   virtual long ThreadMain() {
     while (true) {
-
       try {
           // Wait for a client socket connection
           while(sockets.size() < 2) {
@@ -152,9 +147,10 @@ class ServerThread: public Thread {
               Socket & socketReference = * newConnection;
               sockThreads.push_back(new SocketThread(socketReference, killThread, sockets)); // pass list of sockets to new SocketThread instance
           }
-        server.Shutdown();
 
-      } catch (const std::exception & ex) {
+    server.Shutdown(); //NEED THIS OR ELSE GET BAD FILE DESCRIPTOR 
+
+    } catch (const std::exception & ex) {
         std::cerr << "Caught exception: " << ex.what() << std::endl;
     } catch (const std::basic_string<char>& str) {
         std::cerr << "Caught basic_string exception: " << str << std::endl;
@@ -164,6 +160,8 @@ class ServerThread: public Thread {
     }
   }
 };
+
+
 
 int main(void) {
 
@@ -199,6 +197,8 @@ try{
 
         if (choice == "CLOSE") {
            std::cout << "Closing server..." << std::endl;
+           server.Shutdown(); //calling shutdown of the server 
+           break;
            /*
           int result = shutdown(socket, 0);
           if (result == 0) {
@@ -273,17 +273,6 @@ try{
         
         if (choice == "CLOSE") { //CLOSES CLIENT SIDE AND SENDS MESSAGE THAT CLIENT HAS EXITED 
           std::cout << "Closing client..." << std::endl;
-          /*
-          int result = shutdown(socket, 0);
-          if (result == 0) {
-                // shutdown successful
-                 std::cout << "Closed successfully." << std::endl;
-            } else {
-                // handle error
-                 std::cout << "ERROR" << std::endl;
-            }
-          socket.Close();
-          */
           break;
       }
 
@@ -322,11 +311,11 @@ try{
      }
     }
 
-    FlexWait cinWaiter(1, stdin); //Wait for input to shutdown the server
+    //FlexWait cinWaiter(1, stdin); //Wait for input to shutdown the server
 
-  } 
+    } 
     else {
-      //error
+      std::cout << "Invalid input" << std::endl;
     }
 
   }
