@@ -19,91 +19,67 @@
   using namespace Sync;
 
 //extends Thread class. Responsible for handling client connections.
-class SocketThread: public Thread {
-  private:
-    //variable/obj declartions
+class SocketThread : public Thread {
+private:
   ByteArray data;
 
-  bool & killThread; //creating reference to killThread
-  std::list < Socket * > & sockets; // list of connected sockets
+  bool& killThread; // creating reference to killThread
+  std::list<Socket*>& sockets; // list of connected sockets
 
-  public: 
-    Socket & socket;
+public:
+  Socket& socket;
 
-    SocketThread(Socket & socket, bool & killThread, std::list < Socket * > & sockets)
+  SocketThread(Socket& socket, bool& killThread, std::list<Socket*>& sockets)
     : socket(socket), killThread(killThread), sockets(sockets) {}
 
-    ~SocketThread() {}
+  ~SocketThread() {}
 
-    Socket & GetSocket() {
-      return socket;
-    }
+  Socket& GetSocket() {
+    return socket;
+  }
 
-  //Continuosly reads data from the Socket object, converts it to uppercase, and sends it back to the client.
   virtual long ThreadMain() {
-      while (!killThread) {
-        try {
-          /*
-          if (killThread) {
-            socket.Close();
-            sockets.remove(&socket);  // remove the socket from the list of connected sockets
-            delete this;
-          }
-               */
-          while (socket.Read(data) > 0) { //if socket is not closed, read data that is sent back if data exists 
-            std::string response = data.ToString();
+   
+      
+        while (socket.Read(data) > 0) { // if socket is not closed, read data that is sent back if data exists
+          std::string response = data.ToString();
 
-             /*
-            if (response == close) {
-              std::cout << "Opponent has closed.. \n";
-              //killThread = true;
-              socket.Close();
-             // sockets.remove(&socket);  // remove the socket from the list of connected sockets
-              delete this;
-              break;
-              //socket.Close();
-             // sockets.remove(&socket);  // remove the socket from the list of connected sockets
-              try{
-                 std::cout << "trying";
-                 socket.Close();
-                 sockets.remove(&socket);
-                delete this;
-              } 
-              catch(const std::exception& e){
-                std::cerr << "Server has closed." << std::endl;
-              }
 
-            }
-          */
-
-            for (Socket* otherSocket : sockets) {  //send back response to other socket 
-              if (otherSocket != &socket) {
-                otherSocket->Write(response);
-              }
-            }
-
-            std::string close = "CLOSE";
-            if (response == close){
-              std::cout << "Opponent exited..." << std::endl; //this is working but need to actually close now 
-              int result = shutdown(socket, 0);
-                if (result == 0) {
-                      // shutdown successful
-                      socket.Close();
-                      std::cout << "Closed successfully." << std::endl;
-                } else {
-                      // handle error
-                      std::cout << "Could not shutdown socket" << std::endl;
-                }
-              break;
+          for (Socket* otherSocket : sockets) { // send back response to other sockets
+            if (otherSocket != &socket) {
+              otherSocket->Write(response);
             }
           }
-        } catch (...) {
-          killThread = true;
+          if (response == "CLOSE") {
+            // Close the socket and remove it from the list of connected sockets
+           for (auto socket : sockets) {
+            try {
+              socket->Close(); // assuming Close() is a member function of the Socket class that closes the socket
+              sockets.remove(socket);
+                } catch (...) {
+                 // ignore errors when closing sockets
+                 }   
+            }
+
+          // Clear the list of sockets
+          sockets.clear();
+          break;
+          } 
+      
+
+          
         }
-      }
-      return 0;
-    }
+    
+    
+
+    // Close the socket and remove it from the list of connected sockets when killThread is set to true
+    // socket.Close();
+    // sockets.remove(&socket);
+    // delete this;
+    // return 0;
+  }
 };
+
 
 
 //defines the ServerThread class that extends Thread class, it is responsible for handling server operations
@@ -194,11 +170,7 @@ try{
         std::string choice = " ";
         std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to close the game." << std::endl;
         std::cin >> choice;
-
-        if (choice == "CLOSE") {
-           std::cout << "Closing server..." << std::endl;
-           server.Shutdown(); //calling shutdown of the server 
-           break;
+      
            /*
           int result = shutdown(socket, 0);
           if (result == 0) {
@@ -212,8 +184,7 @@ try{
           server.Shutdown();
            */
           // break;
-        }
-
+      
         socket.Write(ByteArray(choice)); //keep this here so that doesn't write to the socket if closed 
 
         //reads the return message from the Server
@@ -251,7 +222,6 @@ try{
         gamesPlayed++;
 
       }
-      server.Shutdown(); //break out of while loops
     }
   } 
 
@@ -269,17 +239,20 @@ try{
         std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to close the game." << std::endl;
         std::cin >> choice;
 
-        socket.Write(ByteArray(choice));
-        
-        if (choice == "CLOSE") { //CLOSES CLIENT SIDE AND SENDS MESSAGE THAT CLIENT HAS EXITED 
-          std::cout << "Closing client..." << std::endl;
+      socket.Write(ByteArray(choice));
+       if (choice == "CLOSE"){
+          socket.Close();
           break;
-      }
+        }
 
       ByteArray alteredMessage;
 
       socket.Read(alteredMessage); //reads the return message from the Server
       std::string opponentChoice = alteredMessage.ToString();
+      if (opponentChoice == "CLOSE"){
+socket.Close();
+          break;
+      }
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
       if (opponentChoice == "Rock" && choice == "Paper" || opponentChoice == "Paper" && choice == "Scissors" || opponentChoice == "Scissors" && choice == "Rock") {
