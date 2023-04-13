@@ -259,6 +259,9 @@ try{
       
     
       socket.Write(ByteArray(choice));
+      if(choice == "CLOSE"){
+        break;
+      }
 
       ByteArray alteredMessage;
 
@@ -266,7 +269,7 @@ try{
       std::string opponentChoice = alteredMessage.ToString();
       if (opponentChoice == "CLOSE"){
         socket.Close();
-          break;
+        break;
       }
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
 
