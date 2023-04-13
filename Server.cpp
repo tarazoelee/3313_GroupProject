@@ -16,6 +16,9 @@
 
   #include <iostream>
 
+  #include <mutex>
+
+
   using namespace Sync;
 
 //extends Thread class. Responsible for handling client connections.
@@ -84,14 +87,16 @@ public:
 
 //defines the ServerThread class that extends Thread class, it is responsible for handling server operations
 class ServerThread: public Thread {
-  private: 
-    SocketServer & server;
-    std::vector < SocketThread * > sockThreads;
-    std::list < Socket * > sockets; // list of connected sockets
-    bool killThread = false;
-  public: 
-    ServerThread(SocketServer & server, std::vector < SocketThread * > sockThreads): server(server),
-    sockThreads(sockThreads) {}
+private: 
+  SocketServer & server;
+  std::vector < SocketThread * > sockThreads;
+  std::list < Socket * > sockets; // list of connected sockets
+  bool killThread = false;
+  std::mutex mutex; // mutex to protect access to killThread
+
+public: 
+  ServerThread(SocketServer & server, std::vector < SocketThread * > sockThreads): server(server),
+  sockThreads(sockThreads) {}
 
   ~ServerThread() {
     // Close the client sockets
@@ -108,7 +113,11 @@ class ServerThread: public Thread {
       }
     }
     //TERMINATE THE THREAD LOOPS
-    killThread = true;
+    {
+      // Lock the mutex to protect access to killThread
+      std::lock_guard<std::mutex> lock(mutex);
+      killThread = true;
+    }
   }
 
   virtual long ThreadMain() {
@@ -222,6 +231,14 @@ try{
         gamesPlayed++;
 
       }
+           std::cout << "GAME OVER" << std::endl;
+           try{
+            socket.Write(ByteArray("CLOSE"));
+           } catch (...){
+
+           }
+          
+
     }
   } 
 
@@ -239,18 +256,16 @@ try{
         std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to close the game." << std::endl;
         std::cin >> choice;
 
+      
+    
       socket.Write(ByteArray(choice));
-       if (choice == "CLOSE"){
-          socket.Close();
-          break;
-        }
 
       ByteArray alteredMessage;
 
       socket.Read(alteredMessage); //reads the return message from the Server
       std::string opponentChoice = alteredMessage.ToString();
       if (opponentChoice == "CLOSE"){
-socket.Close();
+        socket.Close();
           break;
       }
       std::cout << "Opponent wrote: " << opponentChoice << " You wrote: " << choice << std::endl;
@@ -282,9 +297,14 @@ socket.Close();
         }
         gamesPlayed++;
      }
-    }
+     std::cout << "GAME OVER" << std::endl;
+     try{
+ socket.Write(ByteArray("CLOSE"));
+     }catch (...){
 
-    //FlexWait cinWaiter(1, stdin); //Wait for input to shutdown the server
+     }
+    
+    }
 
     } 
     else {
