@@ -83,8 +83,6 @@ public:
       std::cout << "Trying again in 5 seconds" << std::endl;
       sleep(5);
     }
-using namespace Sync;
-
 
     while (!terminate)
     {
@@ -176,26 +174,26 @@ public:
           otherSocket->Write(response);
         }
       }
-      // if (response == "CLOSE")
-      // {
-      //   // Close the socket and remove it from the list of connected sockets
-      //   for (auto socket : sockets)
-      //   {
-      //     try
-      //     {
-      //       socket->Close(); // assuming Close() is a member function of the Socket class that closes the socket
-      //       sockets.remove(socket);
-      //     }
-      //     catch (...)
-      //     {
-      //       // ignore errors when closing sockets
-      //     }
-      //   }
+      if (response == "CLOSE")
+      {
+        // Close the socket and remove it from the list of connected sockets
+        for (auto socket : sockets)
+        {
+          try
+          {
+            socket->Close(); // assuming Close() is a member function of the Socket class that closes the socket
+            sockets.remove(socket);
+          }
+          catch (...)
+          {
+            // ignore errors when closing sockets
+          }
+        }
 
-      //   // Clear the list of sockets
-      //   sockets.clear();
-      //   break;
-      // }
+        // Clear the list of sockets
+        sockets.clear();
+        break;
+      }
     }
 
     // Close the socket and remove it from the list of connected sockets when killThread is set to true
@@ -238,12 +236,12 @@ public:
         /// killThread = true;
       }
     }
+    // TERMINATE THE THREAD LOOPS
     {
       // Lock the mutex to protect access to killThread
       std::lock_guard<std::mutex> lock(mutex);
       killThread = true;
     }
-
   }
 
   virtual long ThreadMain()
@@ -292,7 +290,7 @@ int main(void)
     std::cout << "Would you like to create (C) a match or join a match (J)" << std::endl;
     std::cout.flush();
     std::cin >> createOrJoin;
-    
+
     if (createOrJoin == "C")
     {
       std::srand(static_cast<unsigned int>(std::time(nullptr)));
