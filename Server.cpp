@@ -83,6 +83,8 @@ public:
       std::cout << "Trying again in 5 seconds" << std::endl;
       sleep(5);
     }
+using namespace Sync;
+
 
     while (!terminate)
     {
@@ -236,12 +238,12 @@ public:
         /// killThread = true;
       }
     }
-    // TERMINATE THE THREAD LOOPS
     {
       // Lock the mutex to protect access to killThread
       std::lock_guard<std::mutex> lock(mutex);
       killThread = true;
     }
+
   }
 
   virtual long ThreadMain()
@@ -290,7 +292,7 @@ int main(void)
     std::cout << "Would you like to create (C) a match or join a match (J)" << std::endl;
     std::cout.flush();
     std::cin >> createOrJoin;
-
+    
     if (createOrJoin == "C")
     {
       std::srand(static_cast<unsigned int>(std::time(nullptr)));
