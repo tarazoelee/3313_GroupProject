@@ -19,7 +19,7 @@
   #include <mutex>
 
 
-  using namespace Sync;
+using namespace Sync;
 
 //extends Thread class. Responsible for handling client connections.
 class SocketThread : public Thread {
@@ -113,11 +113,6 @@ public:
       }
     }
     //TERMINATE THE THREAD LOOPS
-    {
-      // Lock the mutex to protect access to killThread
-      std::lock_guard<std::mutex> lock(mutex);
-      killThread = true;
-    }
   }
 
   virtual long ThreadMain() {
@@ -151,7 +146,6 @@ public:
 int main(void) {
 
 try{
-  std::string userInput = " ";
   std::string createOrJoin = " ";
   int joinPort = 0;
   std::cout << "Would you like to create (C) a match or join a match (J)" << std::endl;
@@ -179,20 +173,6 @@ try{
         std::string choice = " ";
         std::cout << "Write your choice of Rock, Paper, or Scissors. Write CLOSE to close the game." << std::endl;
         std::cin >> choice;
-      
-           /*
-          int result = shutdown(socket, 0);
-          if (result == 0) {
-                // shutdown successful
-                 std::cout << "Closed successfully." << std::endl;
-            } else {
-                // handle error
-                 std::cout << "ERROR" << std::endl;
-            }
-          socket.Close();
-          server.Shutdown();
-           */
-          // break;
       
         socket.Write(ByteArray(choice)); //keep this here so that doesn't write to the socket if closed 
 
